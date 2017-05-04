@@ -7,6 +7,7 @@
   "author": "Sandeep Gunduboyina <sandeepgy11@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "babel-loader": "^7.0.0",
     "jest": "^19.0.2"
   },
   "scripts": {
