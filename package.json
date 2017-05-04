@@ -20,6 +20,7 @@
     "jest": "^19.0.2"
   },
   "scripts": {
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "lint": "eslint test"
   }
 }
