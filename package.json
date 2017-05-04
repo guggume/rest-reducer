@@ -1,0 +1,12 @@
+{
+  "name": "rest-reducer",
+  "version": "0.1",
+  "description": "Restfull reducer for redux",
+  "main": "lib/reducer.js",
+  "repository": "git@github.com:sandeepguggu/rest-reducer.git",
+  "author": "Sandeep Gunduboyina <sandeepgy11@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^19.0.2"
+  }
+}
