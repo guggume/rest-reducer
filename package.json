@@ -8,5 +8,8 @@
   "license": "MIT",
   "devDependencies": {
     "jest": "^19.0.2"
+  },
+  "scripts": {
+    "test": "jest --watch"
   }
 }
