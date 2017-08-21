@@ -8,6 +8,7 @@ const actions = {
   GET: 'GET',
   GET_SUCCESS: 'GET_SUCCESS',
   GET_FAILURE: 'GET_FAILURE',
+  GETALL: 'GETALL',
 };
 
 const testReducer = reducer(actions);
@@ -45,6 +46,9 @@ test('reducer with get action', () => {
         [CODE]: null,
         [ERROR]: null,
         [TIMESTAMP]: 9999,
+        isLoading: true,
+        isLoaded: false,
+        isLoadingFailed: false,
       },
     },
   });
@@ -62,14 +66,14 @@ test('reducer with getSuccess action', () => {
       type: actions.GET_SUCCESS,
       payload: { id: 1 },
     })
-  ).toThrow('Expected item to be an object');
+  ).toThrow('Expected value to be an object');
 
   expect(
     testReducer(defaultState, {
       type: actions.GET_SUCCESS,
       payload: {
         id: 1,
-        item: {
+        value: {
           id: 1,
           name: 'one',
         },
@@ -90,6 +94,9 @@ test('reducer with getSuccess action', () => {
         [CODE]: 200,
         [ERROR]: null,
         [TIMESTAMP]: 9999,
+        isLoading: false,
+        isLoaded: true,
+        isLoadingFailed: false,
       },
     },
   });
@@ -133,6 +140,9 @@ test('reducer with getFailure action', () => {
         [CODE]: 404,
         [ERROR]: 'Not found',
         [TIMESTAMP]: 9999,
+        isLoading: false,
+        isLoaded: false,
+        isLoadingFailed: true,
       },
     },
   });

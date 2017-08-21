@@ -46,6 +46,9 @@ test('changeMeta without error', () => {
     [CODE]: 200,
     [ERROR]: null,
     [TIMESTAMP]: 9999,
+    isLoading: false,
+    isLoaded: true,
+    isLoadingFailed: false,
   });
 });
 
@@ -56,6 +59,9 @@ test('changeMeta with error', () => {
     [CODE]: 400,
     [ERROR]: 'Screwed up.',
     [TIMESTAMP]: 9999,
+    isLoading: false,
+    isLoaded: false,
+    isLoadingFailed: true,
   });
 });
 

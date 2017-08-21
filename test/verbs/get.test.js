@@ -35,6 +35,9 @@ test('get', () => {
         [CODE]: null,
         [ERROR]: null,
         [TIMESTAMP]: 9999,
+        isLoading: true,
+        isLoaded: false,
+        isLoadingFailed: false,
       }
     }
   });
@@ -61,10 +64,10 @@ test('getSuccess', () => {
   expect(() => getSuccess({ items: {} }, {}))
     .toThrow('Expected id to be string or number');
   expect(() => getSuccess({ items: {} }, { id: 1 }))
-    .toThrow('Expected item to be an object');
+    .toThrow('Expected value to be an object');
 
   expect(
-    getSuccess({ items: {} }, { id: 1, item: {} })
+    getSuccess({ items: {} }, { id: 1, value: {} })
   ).toEqual({
     items: {
       1: {
@@ -74,6 +77,9 @@ test('getSuccess', () => {
         [CODE]: 200,
         [ERROR]: null,
         [TIMESTAMP]: 9999,
+        isLoading: false,
+        isLoaded: true,
+        isLoadingFailed: false,
       }
     }
   });
@@ -119,6 +125,9 @@ test('getFailure', () => {
         [CODE]: 400,
         [ERROR]: 'Error',
         [TIMESTAMP]: 9999,
+        isLoading: false,
+        isLoaded: false,
+        isLoadingFailed: true,
       }
     }
   });
@@ -134,6 +143,9 @@ test('getFailure', () => {
         [CODE]: 404,
         [ERROR]: 'Not found.',
         [TIMESTAMP]: 9999,
+        isLoading: false,
+        isLoaded: false,
+        isLoadingFailed: true,
       }
     }
   });
