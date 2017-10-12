@@ -1,6 +1,6 @@
 {
   "name": "redux-rest-reducer",
-  "version": "0.1.6",
+  "version": "0.1.9",
   "description": "Restfull reducer for redux",
   "main": "./distribution/index.js",
   "repository": "git@github.com:sandeepguggu/rest-reducer.git",
@@ -29,6 +29,7 @@
     "prepublish": "yarn run build"
   },
   "dependencies": {
-    "querystring": "^0.2.0"
+    "querystring": "^0.2.0",
+    "uuid": "^3.1.0"
   }
 }

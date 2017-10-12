@@ -3,6 +3,7 @@ import { defaultItem } from '../../lib/defaults';
 import {
   STATES, VERBS, STATE, VERB, DATA, CODE, ERROR, TIMESTAMP,
 } from '../../lib/constants';
+import { changeStateHelper } from '../../lib/utils';
 
 test('get', () => {
   expect(() => get()).toThrow('Expected state to be an object');
@@ -35,9 +36,7 @@ test('get', () => {
         [CODE]: null,
         [ERROR]: null,
         [TIMESTAMP]: 9999,
-        isLoading: true,
-        isLoaded: false,
-        isLoadingFailed: false,
+        ...changeStateHelper(STATES.PENDING, VERBS.GET)
       }
     }
   });
@@ -77,9 +76,7 @@ test('getSuccess', () => {
         [CODE]: 200,
         [ERROR]: null,
         [TIMESTAMP]: 9999,
-        isLoading: false,
-        isLoaded: true,
-        isLoadingFailed: false,
+        ...changeStateHelper(STATES.SYNCED, VERBS.GET)
       }
     }
   });
@@ -125,9 +122,7 @@ test('getFailure', () => {
         [CODE]: 400,
         [ERROR]: 'Error',
         [TIMESTAMP]: 9999,
-        isLoading: false,
-        isLoaded: false,
-        isLoadingFailed: true,
+        ...changeStateHelper(STATES.FAILED, VERBS.GET)
       }
     }
   });
@@ -143,9 +138,7 @@ test('getFailure', () => {
         [CODE]: 404,
         [ERROR]: 'Not found.',
         [TIMESTAMP]: 9999,
-        isLoading: false,
-        isLoaded: false,
-        isLoadingFailed: true,
+        ...changeStateHelper(STATES.FAILED, VERBS.GET)
       }
     }
   });
