@@ -1,6 +1,6 @@
 {
   "name": "redux-rest-reducer",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "description": "Restfull reducer for redux",
   "main": "./distribution/index.js",
   "repository": "git@github.com:sandeepguggu/rest-reducer.git",
