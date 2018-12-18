@@ -1,35 +1,30 @@
 {
   "name": "redux-rest-reducer",
-  "version": "0.4.3",
+  "version": "0.4.5",
   "description": "Restfull reducer for redux",
   "main": "./distribution/index.js",
+  "module": "distribution/index.js",
   "repository": "git@github.com:sandeepguggu/rest-reducer.git",
   "author": "Sandeep Gunduboyina <sandeepgy11@gmail.com>",
   "license": "MIT",
+  "peerDependencies": {
+    "querystring": "^0.2.0",
+    "uuid": "3.3.2"
+  },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-jest": "^22.0.4",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "eslint": "^3.15.0",
-    "eslint-config-airbnb": "^14.1.0",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jest": "^19.0.1",
-    "eslint-plugin-jsx-a11y": "^3.0.2 || ^4.0.0",
-    "eslint-plugin-react": "^6.9.0",
-    "jest": "^22.0.4"
+    "babel-loader": "^8.0.4",
+    "babel-preset-react-app-babel-7": "^4.0.2-0",
+    "rollup": "^0.68.0",
+    "rollup-plugin-babel": "^4.1.0",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-peer-deps-external": "^2.2.0"
   },
   "scripts": {
     "test": "jest --watch",
     "lint": "eslint test",
-    "build": "babel lib --out-dir distribution",
+    "build": "BABEL_ENV=production rollup -c",
     "buildwatch": "babel lib --out-dir distribution --watch",
     "prepublish": "yarn run build"
-  },
-  "dependencies": {
-    "querystring": "^0.2.0",
-    "uuid": "^3.1.0"
   }
 }

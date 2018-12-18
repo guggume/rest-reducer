@@ -1,13 +1,5 @@
 {
-  "presets": [
-    [
-      "env",
-      { "targets": { node: "current", "modules": false } }
-    ]
-  ],
-  "plugins": [
-    [
-      "transform-object-rest-spread", { "useBuiltIns": true }
-    ]
+  presets: [
+    ["react-app-babel-7"]
   ]
 }
