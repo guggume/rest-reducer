@@ -1,5 +1,5 @@
 {
-  "extends": "airbnb",
+  "extends": "@cuemath",
   "env": {
     "jest": true
   }

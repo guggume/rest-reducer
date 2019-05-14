@@ -1,0 +1,5 @@
+linters:
+  lib/**/*.js:
+    - prettier --write
+    - eslint
+    - git add
