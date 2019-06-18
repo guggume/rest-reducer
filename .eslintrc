@@ -1,6 +1,0 @@
-{
-  "extends": "@cuemath",
-  "env": {
-    "jest": true
-  }
-}
