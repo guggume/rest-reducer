@@ -2697,27 +2697,29 @@ function _fetchAccessToken() {
             });
             refreshing = false;
             replayActions();
-            _context.next = 17;
+            _context.next = 18;
             break;
 
           case 16:
-            handleResponses(resp);
+            refreshing = false;
+            handleResponses(resp && resp.status && resp.status === 401 ? resp : {});
 
-          case 17:
-            _context.next = 22;
+          case 18:
+            _context.next = 24;
             break;
 
-          case 19:
-            _context.prev = 19;
+          case 20:
+            _context.prev = 20;
             _context.t0 = _context["catch"](3);
+            refreshing = false;
             handleResponses({});
 
-          case 22:
+          case 24:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[3, 19]]);
+    }, _callee, this, [[3, 20]]);
   }));
   return _fetchAccessToken.apply(this, arguments);
 }
