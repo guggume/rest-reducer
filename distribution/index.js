@@ -171,7 +171,7 @@ var ERRORS = {
 };
 
 function getTimestamp() {
-  if (process.env && process.env.NODE_ENV === 'test') {
+  if (process.env && process.env.NODE_ENV === "test") {
     return 9999;
   }
 
@@ -201,14 +201,31 @@ function changeMeta(state, verb, code, error) {
   var _objectSpread2;
 
   if (!state || !STATES[state]) {
-    throw new Error('Expected state to be enum of `STATES` constants');
+    throw new Error("Expected state to be enum of `STATES` constants");
   }
 
-  if (code && typeof code !== 'number') {
-    throw new Error('Expected code to be a number');
+  if (code && typeof code !== "number") {
+    throw new Error("Expected code to be a number");
   }
 
   return _objectSpread((_objectSpread2 = {}, _defineProperty(_objectSpread2, STATE, state), _defineProperty(_objectSpread2, VERB, verb), _defineProperty(_objectSpread2, CODE, code || null), _defineProperty(_objectSpread2, TIMESTAMP, getTimestamp()), _defineProperty(_objectSpread2, ERROR, error || null), _objectSpread2), changeStateHelper(state, verb));
+}
+function changeListToStale(state) {
+  var list = {};
+  Object.keys(state[LIST]).forEach(function (key) {
+    list[key] = _objectSpread({}, state[LIST][key], changeMeta(STATES.STALE));
+  });
+  return _objectSpread({}, state, _defineProperty({}, LIST, list));
+}
+function changeItemToStale(state, id, query) {
+  var qs = query ? "".concat(id, "::").concat(sortedStringify(query)) : id;
+  var item = state[ITEMS][qs];
+
+  if (!item) {
+    return state;
+  }
+
+  return _objectSpread({}, state, _defineProperty({}, ITEMS, _objectSpread({}, state[ITEMS], _defineProperty({}, qs, _objectSpread({}, item, changeMeta(STATES.STALE))))));
 }
 function getParams(store, globalParams, params) {
   var config = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
@@ -256,6 +273,10 @@ function dispatchSuccess(dispatch, code, value, permissions, action) {
     }
   });
 }
+var utils = {
+  changeItemToStale: changeItemToStale,
+  changeListToStale: changeListToStale
+};
 
 function applyMiddleware (fn, middlewares) {
   middlewares.forEach(function (mw) {
@@ -1530,18 +1551,1085 @@ try {
 
 var regenerator = runtime_1;
 
-<<<<<<< HEAD
-var handleResponse$$1 = {
-  get: handleResponse$1
+function handleResponse(_x, _x2) {
+  return _handleResponse.apply(this, arguments);
+}
+
+function _handleResponse() {
+  _handleResponse = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee(response, options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        id,
+        query,
+        config,
+        data,
+        _data,
+        _args = arguments;
+
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, query = options.query, config = options.config;
+
+            if (response.status) {
+              _context.next = 6;
+              break;
+            }
+
+            dispatchErrors(dispatch, null, ACTIONS.FAILURE, {
+              query: query
+            });
+            _context.next = 25;
+            break;
+
+          case 6:
+            if (!(response.status >= 200 && response.status < 300)) {
+              _context.next = 13;
+              break;
+            }
+
+            _context.next = 9;
+            return response.json();
+
+          case 9:
+            data = _context.sent;
+            dispatchSuccess(dispatch, response.status, data.value, data.permissions || {}, ACTIONS.SUCCESS, {
+              query: query
+            });
+            _context.next = 25;
+            break;
+
+          case 13:
+            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+              _context.next = 17;
+              break;
+            }
+
+            refreshToken(options, "getAll", response);
+            _context.next = 25;
+            break;
+
+          case 17:
+            if (!(response.status >= 400 && response.status < 500)) {
+              _context.next = 24;
+              break;
+            }
+
+            _context.next = 20;
+            return response.json();
+
+          case 20:
+            _data = _context.sent;
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              query: query,
+              error: _data.error
+            });
+            _context.next = 25;
+            break;
+
+          case 24:
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              query: query
+            });
+
+          case 25:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+  return _handleResponse.apply(this, arguments);
+}
+
+function getAllAction (_x3) {
+  return _ref.apply(this, arguments);
+}
+
+function _ref() {
+  _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee2(options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        getState,
+        globalParams,
+        url,
+        query,
+        meta,
+        params,
+        config,
+        response,
+        _args2 = arguments;
+    return regenerator.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            replay = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, getState = options.getState, globalParams = options.globalParams, url = options.url, query = options.query, meta = options.meta, params = options.params, config = options.config;
+
+            if (!replay) {
+              dispatch({
+                type: ACTIONS.PENDING,
+                payload: {
+                  query: query,
+                  meta: meta,
+                  code: -1
+                }
+              });
+            }
+
+            if (!isRefreshing()) {
+              _context2.next = 7;
+              break;
+            }
+
+            addToQueue(options, "getAll");
+            _context2.next = 17;
+            break;
+
+          case 7:
+            _context2.prev = 7;
+            _context2.next = 10;
+            return fetch(url(query, meta), getParams(getState(), globalParams, _objectSpread({
+              method: "GET"
+            }, params), config));
+
+          case 10:
+            response = _context2.sent;
+            handleResponse(response, options);
+            _context2.next = 17;
+            break;
+
+          case 14:
+            _context2.prev = 14;
+            _context2.t0 = _context2["catch"](7);
+            handleResponse({}, options);
+
+          case 17:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this, [[7, 14]]);
+  }));
+  return _ref.apply(this, arguments);
+}
+
+function handleResponse$1(_x, _x2) {
+  return _handleResponse$1.apply(this, arguments);
+}
+
+function _handleResponse$1() {
+  _handleResponse$1 = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee(response, options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        id,
+        config,
+        data,
+        _data,
+        _args = arguments;
+
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, config = options.config;
+
+            if (response.status) {
+              _context.next = 6;
+              break;
+            }
+
+            dispatchErrors(dispatch, null, ACTIONS.FAILURE, {
+              id: id
+            });
+            _context.next = 25;
+            break;
+
+          case 6:
+            if (!(response.status >= 200 && response.status < 300)) {
+              _context.next = 13;
+              break;
+            }
+
+            _context.next = 9;
+            return response.json();
+
+          case 9:
+            data = _context.sent;
+            dispatchSuccess(dispatch, response.status, data.value, data.permissions || {}, ACTIONS.SUCCESS, {
+              id: id
+            });
+            _context.next = 25;
+            break;
+
+          case 13:
+            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+              _context.next = 17;
+              break;
+            }
+
+            refreshToken(options, "post", response);
+            _context.next = 25;
+            break;
+
+          case 17:
+            if (!(response.status >= 400 && response.status < 500)) {
+              _context.next = 24;
+              break;
+            }
+
+            _context.next = 20;
+            return response.json();
+
+          case 20:
+            _data = _context.sent;
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              id: id,
+              error: _data.error
+            });
+            _context.next = 25;
+            break;
+
+          case 24:
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              id: id
+            });
+
+          case 25:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+  return _handleResponse$1.apply(this, arguments);
+}
+
+var CONTENT_TYPE = "application/JSON";
+function postAction (_x3) {
+  return _ref$1.apply(this, arguments);
+}
+
+function _ref$1() {
+  _ref$1 = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee2(options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        getState,
+        globalParams,
+        url,
+        id,
+        value,
+        meta,
+        params,
+        raw,
+        config,
+        response,
+        _args2 = arguments;
+    return regenerator.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            replay = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, getState = options.getState, globalParams = options.globalParams, url = options.url, id = options.id, value = options.value, meta = options.meta, params = options.params, raw = options.raw, config = options.config;
+
+            if (!replay) {
+              dispatch({
+                type: ACTIONS.PENDING,
+                payload: {
+                  id: id,
+                  value: value,
+                  meta: meta,
+                  code: -1
+                }
+              });
+            }
+
+            if (!isRefreshing()) {
+              _context2.next = 7;
+              break;
+            }
+
+            addToQueue(options, "post");
+            _context2.next = 17;
+            break;
+
+          case 7:
+            _context2.prev = 7;
+            _context2.next = 10;
+            return fetch(url(id, value, meta), getParams(getState(), globalParams, _objectSpread({
+              method: "POST",
+              headers: {
+                "Content-Type": CONTENT_TYPE
+              },
+              body: raw ? value : JSON.stringify(value)
+            }, params), config));
+
+          case 10:
+            response = _context2.sent;
+            handleResponse$1(response, options);
+            _context2.next = 17;
+            break;
+
+          case 14:
+            _context2.prev = 14;
+            _context2.t0 = _context2["catch"](7);
+            handleResponse$1({}, options);
+
+          case 17:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this, [[7, 14]]);
+  }));
+  return _ref$1.apply(this, arguments);
+}
+
+function handleResponse$2(_x, _x2) {
+  return _handleResponse$2.apply(this, arguments);
+}
+
+function _handleResponse$2() {
+  _handleResponse$2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee(response, options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        id,
+        patchId,
+        config,
+        data,
+        _data,
+        _args = arguments;
+
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, patchId = options.patchId, config = options.config;
+
+            if (response.status) {
+              _context.next = 6;
+              break;
+            }
+
+            dispatchErrors(dispatch, null, ACTIONS.FAILURE, {
+              id: id,
+              patchId: patchId
+            });
+            _context.next = 25;
+            break;
+
+          case 6:
+            if (!(response.status >= 200 && response.status < 300)) {
+              _context.next = 13;
+              break;
+            }
+
+            _context.next = 9;
+            return response.json();
+
+          case 9:
+            data = _context.sent;
+            dispatchSuccess(dispatch, response.status, data.value, data.permissions || {}, ACTIONS.SUCCESS, {
+              id: id,
+              patchId: patchId
+            });
+            _context.next = 25;
+            break;
+
+          case 13:
+            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+              _context.next = 17;
+              break;
+            }
+
+            refreshToken(options, "patch", response);
+            _context.next = 25;
+            break;
+
+          case 17:
+            if (!(response.status >= 400 && response.status < 500)) {
+              _context.next = 24;
+              break;
+            }
+
+            _context.next = 20;
+            return response.json();
+
+          case 20:
+            _data = _context.sent;
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              id: id,
+              patchId: patchId,
+              error: _data.error
+            });
+            _context.next = 25;
+            break;
+
+          case 24:
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              id: id,
+              patchId: patchId
+            });
+
+          case 25:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+  return _handleResponse$2.apply(this, arguments);
+}
+
+var CONTENT_TYPE$1 = "application/JSON";
+function patchAction (_x3) {
+  return _ref$2.apply(this, arguments);
+}
+
+function _ref$2() {
+  _ref$2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee2(options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        getState,
+        globalParams,
+        url,
+        patchId,
+        id,
+        value,
+        meta,
+        params,
+        raw,
+        config,
+        response,
+        _args2 = arguments;
+    return regenerator.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            replay = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, getState = options.getState, globalParams = options.globalParams, url = options.url, patchId = options.patchId, id = options.id, value = options.value, meta = options.meta, params = options.params, raw = options.raw, config = options.config;
+
+            if (!replay) {
+              dispatch({
+                type: ACTIONS.PENDING,
+                payload: {
+                  id: id,
+                  patchId: patchId,
+                  value: value,
+                  meta: meta,
+                  code: -1
+                }
+              });
+            }
+
+            if (!isRefreshing()) {
+              _context2.next = 7;
+              break;
+            }
+
+            addToQueue(options, "patch");
+            _context2.next = 17;
+            break;
+
+          case 7:
+            _context2.prev = 7;
+            _context2.next = 10;
+            return fetch(url(id, value, meta), getParams(getState(), globalParams, _objectSpread({
+              method: "PATCH",
+              headers: {
+                "Content-Type": CONTENT_TYPE$1
+              },
+              body: raw ? value : JSON.stringify(value)
+            }, params), config));
+
+          case 10:
+            response = _context2.sent;
+            handleResponse$2(response, options);
+            _context2.next = 17;
+            break;
+
+          case 14:
+            _context2.prev = 14;
+            _context2.t0 = _context2["catch"](7);
+            handleResponse$2({}, options);
+
+          case 17:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this, [[7, 14]]);
+  }));
+  return _ref$2.apply(this, arguments);
+}
+
+function handleResponse$3(_x, _x2) {
+  return _handleResponse$3.apply(this, arguments);
+}
+
+function _handleResponse$3() {
+  _handleResponse$3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee(response, options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        id,
+        config,
+        data,
+        _data,
+        _args = arguments;
+
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, config = options.config;
+
+            if (response.status) {
+              _context.next = 6;
+              break;
+            }
+
+            dispatchErrors(dispatch, null, ACTIONS.FAILURE, {
+              id: id
+            });
+            _context.next = 25;
+            break;
+
+          case 6:
+            if (!(response.status >= 200 && response.status < 300)) {
+              _context.next = 13;
+              break;
+            }
+
+            _context.next = 9;
+            return response.json();
+
+          case 9:
+            data = _context.sent;
+            dispatchSuccess(dispatch, response.status, data.value, data.permissions || {}, ACTIONS.SUCCESS, {
+              id: id
+            });
+            _context.next = 25;
+            break;
+
+          case 13:
+            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+              _context.next = 17;
+              break;
+            }
+
+            refreshToken(options, "put", response);
+            _context.next = 25;
+            break;
+
+          case 17:
+            if (!(response.status >= 400 && response.status < 500)) {
+              _context.next = 24;
+              break;
+            }
+
+            _context.next = 20;
+            return response.json();
+
+          case 20:
+            _data = _context.sent;
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              id: id,
+              error: _data.error
+            });
+            _context.next = 25;
+            break;
+
+          case 24:
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              id: id
+            });
+
+          case 25:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+  return _handleResponse$3.apply(this, arguments);
+}
+
+var CONTENT_TYPE$2 = "application/JSON";
+function putAction (_x3) {
+  return _ref$3.apply(this, arguments);
+}
+
+function _ref$3() {
+  _ref$3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee2(options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        getState,
+        globalParams,
+        url,
+        id,
+        value,
+        meta,
+        params,
+        raw,
+        config,
+        response,
+        _args2 = arguments;
+    return regenerator.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            replay = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, getState = options.getState, globalParams = options.globalParams, url = options.url, id = options.id, value = options.value, meta = options.meta, params = options.params, raw = options.raw, config = options.config;
+
+            if (!replay) {
+              dispatch({
+                type: ACTIONS.PENDING,
+                payload: {
+                  id: id,
+                  value: value,
+                  meta: meta,
+                  code: -1
+                }
+              });
+            }
+
+            if (!isRefreshing()) {
+              _context2.next = 7;
+              break;
+            }
+
+            addToQueue(options, "put");
+            _context2.next = 17;
+            break;
+
+          case 7:
+            _context2.prev = 7;
+            _context2.next = 10;
+            return fetch(url(id, value, meta), getParams(getState(), globalParams, _objectSpread({
+              method: "PUT",
+              headers: {
+                "Content-Type": CONTENT_TYPE$2
+              },
+              body: raw ? value : JSON.stringify(value)
+            }, params), config));
+
+          case 10:
+            response = _context2.sent;
+            handleResponse$3(response, options);
+            _context2.next = 17;
+            break;
+
+          case 14:
+            _context2.prev = 14;
+            _context2.t0 = _context2["catch"](7);
+            handleResponse$3({}, options);
+
+          case 17:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this, [[7, 14]]);
+  }));
+  return _ref$3.apply(this, arguments);
+}
+
+function handleResponse$4(_x, _x2) {
+  return _handleResponse$4.apply(this, arguments);
+}
+
+function _handleResponse$4() {
+  _handleResponse$4 = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee(response, options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        id,
+        config,
+        data,
+        _data,
+        _args = arguments;
+
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, config = options.config;
+
+            if (response.status) {
+              _context.next = 6;
+              break;
+            }
+
+            dispatchErrors(dispatch, null, ACTIONS.FAILURE, {
+              id: id
+            });
+            _context.next = 25;
+            break;
+
+          case 6:
+            if (!(response.status >= 200 && response.status < 300)) {
+              _context.next = 13;
+              break;
+            }
+
+            _context.next = 9;
+            return response.json();
+
+          case 9:
+            data = _context.sent;
+            dispatchSuccess(dispatch, response.status, data.value, data.permissions || {}, ACTIONS.SUCCESS, {
+              id: id
+            });
+            _context.next = 25;
+            break;
+
+          case 13:
+            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+              _context.next = 17;
+              break;
+            }
+
+            refreshToken(options, "remove", response);
+            _context.next = 25;
+            break;
+
+          case 17:
+            if (!(response.status >= 400 && response.status < 500)) {
+              _context.next = 24;
+              break;
+            }
+
+            _context.next = 20;
+            return response.json();
+
+          case 20:
+            _data = _context.sent;
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              id: id,
+              error: _data.error
+            });
+            _context.next = 25;
+            break;
+
+          case 24:
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              id: id
+            });
+
+          case 25:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+  return _handleResponse$4.apply(this, arguments);
+}
+function removeAction (_x3) {
+  return _ref$4.apply(this, arguments);
+}
+
+function _ref$4() {
+  _ref$4 = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee2(options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        getState,
+        globalParams,
+        url,
+        id,
+        meta,
+        params,
+        raw,
+        config,
+        response,
+        _args2 = arguments;
+    return regenerator.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            replay = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, getState = options.getState, globalParams = options.globalParams, url = options.url, id = options.id, meta = options.meta, params = options.params, raw = options.raw, config = options.config;
+
+            if (!replay) {
+              dispatch({
+                type: ACTIONS.PENDING,
+                payload: {
+                  id: id,
+                  meta: meta,
+                  code: -1
+                }
+              });
+            }
+
+            if (!isRefreshing()) {
+              _context2.next = 7;
+              break;
+            }
+
+            addToQueue(options, "remove");
+            _context2.next = 17;
+            break;
+
+          case 7:
+            _context2.prev = 7;
+            _context2.next = 10;
+            return fetch(url(id, meta), getParams(getState(), globalParams, _objectSpread({
+              method: "DELETE"
+            }, params), config));
+
+          case 10:
+            response = _context2.sent;
+            handleResponse$4(response, options);
+            _context2.next = 17;
+            break;
+
+          case 14:
+            _context2.prev = 14;
+            _context2.t0 = _context2["catch"](7);
+            handleResponse$4({}, options);
+
+          case 17:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this, [[7, 14]]);
+  }));
+  return _ref$4.apply(this, arguments);
+}
+
+function handleResponse$5(_x, _x2) {
+  return _handleResponse$5.apply(this, arguments);
+}
+
+function _handleResponse$5() {
+  _handleResponse$5 = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee(response, options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        id,
+        ids,
+        config,
+        data,
+        _data,
+        _args = arguments;
+
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, ids = options.ids, config = options.config;
+
+            if (response.status) {
+              _context.next = 6;
+              break;
+            }
+
+            dispatchErrors(dispatch, null, ACTIONS.FAILURE, {
+              id: id,
+              ids: ids
+            });
+            _context.next = 25;
+            break;
+
+          case 6:
+            if (!(response.status >= 200 && response.status < 300)) {
+              _context.next = 13;
+              break;
+            }
+
+            _context.next = 9;
+            return response.json();
+
+          case 9:
+            data = _context.sent;
+            dispatchSuccess(dispatch, response.status, data.value, data.permissions || {}, ACTIONS.SUCCESS, {
+              id: id,
+              ids: ids
+            });
+            _context.next = 25;
+            break;
+
+          case 13:
+            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+              _context.next = 17;
+              break;
+            }
+
+            refreshToken(options, "removeAll", response);
+            _context.next = 25;
+            break;
+
+          case 17:
+            if (!(response.status >= 400 && response.status < 500)) {
+              _context.next = 24;
+              break;
+            }
+
+            _context.next = 20;
+            return response.json();
+
+          case 20:
+            _data = _context.sent;
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              id: id,
+              ids: ids,
+              error: _data.error
+            });
+            _context.next = 25;
+            break;
+
+          case 24:
+            dispatchErrors(dispatch, response, ACTIONS.FAILURE, {
+              id: id,
+              ids: ids
+            });
+
+          case 25:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+  return _handleResponse$5.apply(this, arguments);
+}
+function removeAllAction (_x3) {
+  return _ref$5.apply(this, arguments);
+}
+
+function _ref$5() {
+  _ref$5 = _asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee2(options) {
+    var replay,
+        ACTIONS,
+        dispatch,
+        getState,
+        globalParams,
+        url,
+        id,
+        ids,
+        value,
+        meta,
+        params,
+        raw,
+        config,
+        response,
+        _args2 = arguments;
+    return regenerator.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            replay = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : false;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, getState = options.getState, globalParams = options.globalParams, url = options.url, id = options.id, ids = options.ids, value = options.value, meta = options.meta, params = options.params, raw = options.raw, config = options.config;
+
+            if (!replay) {
+              dispatch({
+                type: ACTIONS.PENDING,
+                payload: {
+                  id: id,
+                  ids: ids,
+                  value: value,
+                  meta: meta,
+                  code: -1
+                }
+              });
+            }
+
+            if (!isRefreshing()) {
+              _context2.next = 7;
+              break;
+            }
+
+            addToQueue(options, "removeAll");
+            _context2.next = 17;
+            break;
+
+          case 7:
+            _context2.prev = 7;
+            _context2.next = 10;
+            return fetch(url(ids, value, meta), getParams(getState(), globalParams, _objectSpread({
+              method: "DELETE",
+              body: raw ? value : JSON.stringify(value)
+            }, params), config));
+
+          case 10:
+            response = _context2.sent;
+            handleResponse$5(response, options);
+            _context2.next = 17;
+            break;
+
+          case 14:
+            _context2.prev = 14;
+            _context2.t0 = _context2["catch"](7);
+            handleResponse$5({}, options);
+
+          case 17:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this, [[7, 14]]);
+  }));
+  return _ref$5.apply(this, arguments);
+}
+
+var handleResponse$6 = {
+  get: handleResponse$7,
+  getAll: handleResponse,
+  post: handleResponse$1,
+  patch: handleResponse$2,
+  put: handleResponse$3,
+  remove: handleResponse$4,
+  removeAll: handleResponse$5
 };
 var replayAction = {
-  get: getAction
-=======
-var ERRORS = {
-  0: 'RRR_NO_RESPONSE',
-  403: 'RRR_FORBIDDEN',
-  401: 'RRR_UNAUTHORIZED'
->>>>>>> master
+  get: getAction,
+  getAll: getAllAction,
+  post: postAction,
+  patch: patchAction,
+  put: putAction,
+  remove: removeAction,
+  removeAll: removeAllAction
 };
 var refreshing = false;
 var queue = [];
@@ -1550,7 +2638,7 @@ function handleResponses(response) {
   queue.forEach(function (_ref) {
     var options = _ref.options,
         action = _ref.action;
-    handleResponse$$1[action](response, options, true);
+    handleResponse$6[action](response, options, true);
   });
   queue = [];
 }
@@ -1572,8 +2660,7 @@ function _fetchAccessToken() {
   _fetchAccessToken = _asyncToGenerator(
   /*#__PURE__*/
   regenerator.mark(function _callee(options) {
-    var config, dispatch, getState, refreshTokenKey, refreshTokenExtractor, refreshTokenACTION, refreshTokenURL, refreshToken, _fetch, resp, data;
-
+    var config, dispatch, getState, refreshTokenKey, refreshTokenExtractor, refreshTokenACTION, refreshTokenURL, refreshToken, resp, data;
     return regenerator.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -1583,13 +2670,19 @@ function _fetchAccessToken() {
             refreshToken = refreshTokenExtractor(getState());
             _context.prev = 3;
             _context.next = 6;
-            return fetch(refreshTokenURL, (_fetch = {}, _defineProperty(_fetch, refreshTokenKey, refreshToken), _defineProperty(_fetch, "method", 'POST'), _fetch));
+            return fetch(refreshTokenURL, {
+              headers: {
+                "Content-Type": "application/JSON"
+              },
+              body: JSON.stringify(_defineProperty({}, refreshTokenKey, refreshToken)),
+              method: "POST"
+            });
 
           case 6:
             resp = _context.sent;
 
             if (!(resp && resp.status && resp.status >= 200 && resp.status < 300)) {
-              _context.next = 15;
+              _context.next = 16;
               break;
             }
 
@@ -1600,30 +2693,31 @@ function _fetchAccessToken() {
             data = _context.sent;
             dispatch({
               type: refreshTokenACTION,
-              payload: data.value
+              payload: data
             });
+            refreshing = false;
             replayActions();
-            _context.next = 16;
+            _context.next = 17;
             break;
-
-          case 15:
-            handleResponses(resp);
 
           case 16:
-            _context.next = 21;
+            handleResponses(resp);
+
+          case 17:
+            _context.next = 22;
             break;
 
-          case 18:
-            _context.prev = 18;
+          case 19:
+            _context.prev = 19;
             _context.t0 = _context["catch"](3);
             handleResponses({});
 
-          case 21:
+          case 22:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[3, 18]]);
+    }, _callee, this, [[3, 19]]);
   }));
   return _fetchAccessToken.apply(this, arguments);
 }
@@ -1656,12 +2750,12 @@ function refreshToken (options, action) {
   }
 }
 
-function handleResponse$1(_x, _x2) {
-  return _handleResponse.apply(this, arguments);
+function handleResponse$7(_x, _x2) {
+  return _handleResponse$6.apply(this, arguments);
 }
 
-function _handleResponse() {
-  _handleResponse = _asyncToGenerator(
+function _handleResponse$6() {
+  _handleResponse$6 = _asyncToGenerator(
   /*#__PURE__*/
   regenerator.mark(function _callee(response, options) {
     var replay,
@@ -1717,7 +2811,7 @@ function _handleResponse() {
               break;
             }
 
-            refreshToken(options, 'get', response);
+            refreshToken(options, "get", response);
             _context.next = 25;
             break;
 
@@ -1753,15 +2847,15 @@ function _handleResponse() {
       }
     }, _callee, this);
   }));
-  return _handleResponse.apply(this, arguments);
+  return _handleResponse$6.apply(this, arguments);
 }
 
 function getAction (_x3) {
-  return _ref.apply(this, arguments);
+  return _ref$6.apply(this, arguments);
 }
 
-function _ref() {
-  _ref = _asyncToGenerator(
+function _ref$6() {
+  _ref$6 = _asyncToGenerator(
   /*#__PURE__*/
   regenerator.mark(function _callee2(options) {
     var replay,
@@ -1801,7 +2895,7 @@ function _ref() {
               break;
             }
 
-            addToQueue(options, 'get');
+            addToQueue(options, "get");
             _context2.next = 17;
             break;
 
@@ -1809,19 +2903,19 @@ function _ref() {
             _context2.prev = 7;
             _context2.next = 10;
             return fetch(url(id, query, meta), getParams(getState(), globalParams, _objectSpread({
-              method: 'GET'
+              method: "GET"
             }, params), config));
 
           case 10:
             response = _context2.sent;
-            handleResponse$1(response, options);
+            handleResponse$7(response, options);
             _context2.next = 17;
             break;
 
           case 14:
             _context2.prev = 14;
             _context2.t0 = _context2["catch"](7);
-            handleResponse$1({}, options);
+            handleResponse$7({}, options);
 
           case 17:
           case "end":
@@ -1830,52 +2924,9 @@ function _ref() {
       }
     }, _callee2, this, [[7, 14]]);
   }));
-  return _ref.apply(this, arguments);
+  return _ref$6.apply(this, arguments);
 }
 
-function dispatchErrors$1(dispatch, response, action) {
-  var payload = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-  var code = response ? response.status : 0;
-  var actions = action ? Array.isArray(action) ? [].concat(_toConsumableArray(action), [ERRORS[code]]) : [action, ERRORS[code]] : [ERRORS[code]];
-  actions.forEach(function (action) {
-    if (action) {
-      dispatch({
-        type: action,
-        payload: _objectSpread({}, payload, {
-          code: code
-        })
-      });
-    }
-  });
-}
-
-function dispatchSuccess$1(dispatch, code, value, permissions, action) {
-  var payload = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {};
-  var actions = Array.isArray(action) ? action : [action];
-  actions.forEach(function (action) {
-    if (action) {
-      dispatch({
-        type: action,
-        payload: _objectSpread({}, payload, {
-          value: value,
-          permissions: permissions,
-          code: code
-        })
-      });
-    }
-  });
-}
-
-var getParams$1 = function getParams(store, globalParams, params) {
-  var config = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-  var authKey = config.authKey,
-      authExtractor = config.authExtractor;
-  return _objectSpread({}, globalParams, params, {
-    headers: _objectSpread({}, globalParams.headers ? globalParams.headers : {}, params.headers ? params.headers : {}, authKey && authExtractor ? _defineProperty({}, authKey, authExtractor(store)) : {})
-  });
-};
-
-var CONTENT_TYPE = 'application/JSON';
 function actions () {
   var globalParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -1885,7 +2936,7 @@ function actions () {
     return function (items, primaryKey) {
       return function (dispatch) {
         if (!primaryKey) {
-          throw new Error('mergeAll requires primary key for merging');
+          throw new Error("mergeAll requires primary key for merging");
         }
 
         if (isArray(items) || isObject(items)) {
@@ -1897,119 +2948,48 @@ function actions () {
             }
           });
         } else {
-          throw new Error('mergeAll requires items to be an Array or An Object');
+          throw new Error("mergeAll requires items to be an Array or An Object");
         }
       };
     };
   };
 
-  var getAll = function getAll(url, _ref3) {
-    var PENDING = _ref3.PENDING,
-        SUCCESS = _ref3.SUCCESS,
-        FAILURE = _ref3.FAILURE;
+  var getAll = function getAll(url, ACTIONS) {
     var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     return function (query, meta) {
       return (
         /*#__PURE__*/
         function () {
-          var _ref4 = _asyncToGenerator(
+          var _ref3 = _asyncToGenerator(
           /*#__PURE__*/
           regenerator.mark(function _callee(dispatch, getState) {
-            var response, data, _data;
-
             return regenerator.wrap(function _callee$(_context) {
               while (1) {
                 switch (_context.prev = _context.next) {
                   case 0:
-                    dispatch({
-                      type: PENDING,
-                      payload: {
-                        query: query,
-                        meta: meta,
-                        code: -1
-                      }
-                    });
-                    _context.prev = 1;
-                    _context.next = 4;
-                    return fetch(url(query, meta), getParams$1(getState(), globalParams, _objectSpread({
-                      method: 'GET'
-                    }, params), config));
-
-                  case 4:
-                    response = _context.sent;
-
-                    if (response.status) {
-                      _context.next = 9;
-                      break;
-                    }
-
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      query: query
-                    });
-                    _context.next = 24;
-                    break;
-
-                  case 9:
-                    if (!(response.status >= 200 && response.status < 300)) {
-                      _context.next = 16;
-                      break;
-                    }
-
-                    _context.next = 12;
-                    return response.json();
-
-                  case 12:
-                    data = _context.sent;
-                    dispatchSuccess$1(dispatch, response.status, data.value, data.permissions || {}, SUCCESS, {
-                      query: query
-                    });
-                    _context.next = 24;
-                    break;
-
-                  case 16:
-                    if (!(response.status >= 400 && response.status < 500)) {
-                      _context.next = 23;
-                      break;
-                    }
-
-                    _context.next = 19;
-                    return response.json();
-
-                  case 19:
-                    _data = _context.sent;
-                    dispatchErrors$1(dispatch, response, FAILURE, {
+                    _context.next = 2;
+                    return getAllAction({
+                      ACTIONS: ACTIONS,
+                      url: url,
                       query: query,
-                      error: _data.error
-                    });
-                    _context.next = 24;
-                    break;
-
-                  case 23:
-                    dispatchErrors$1(dispatch, response, FAILURE, {
-                      query: query
+                      meta: meta,
+                      params: params,
+                      globalParams: globalParams,
+                      config: config,
+                      dispatch: dispatch,
+                      getState: getState
                     });
 
-                  case 24:
-                    _context.next = 29;
-                    break;
-
-                  case 26:
-                    _context.prev = 26;
-                    _context.t0 = _context["catch"](1);
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      query: query
-                    });
-
-                  case 29:
+                  case 2:
                   case "end":
                     return _context.stop();
                 }
               }
-            }, _callee, this, [[1, 26]]);
+            }, _callee, this);
           }));
 
           return function (_x, _x2) {
-            return _ref4.apply(this, arguments);
+            return _ref3.apply(this, arguments);
           };
         }()
       );
@@ -2022,14 +3002,9 @@ function actions () {
       return (
         /*#__PURE__*/
         function () {
-          var _ref5 = _asyncToGenerator(
+          var _ref4 = _asyncToGenerator(
           /*#__PURE__*/
           regenerator.mark(function _callee2(dispatch, getState) {
-<<<<<<< HEAD
-=======
-            var response, data, _data2;
-
->>>>>>> master
             return regenerator.wrap(function _callee2$(_context2) {
               while (1) {
                 switch (_context2.prev = _context2.next) {
@@ -2057,6 +3032,51 @@ function actions () {
           }));
 
           return function (_x3, _x4) {
+            return _ref4.apply(this, arguments);
+          };
+        }()
+      );
+    };
+  };
+
+  var put = function put(url, ACTIONS) {
+    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var raw = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+    return function (id, value, meta) {
+      return (
+        /*#__PURE__*/
+        function () {
+          var _ref5 = _asyncToGenerator(
+          /*#__PURE__*/
+          regenerator.mark(function _callee3(dispatch, getState) {
+            return regenerator.wrap(function _callee3$(_context3) {
+              while (1) {
+                switch (_context3.prev = _context3.next) {
+                  case 0:
+                    _context3.next = 2;
+                    return putAction({
+                      ACTIONS: ACTIONS,
+                      url: url,
+                      id: id,
+                      value: value,
+                      meta: meta,
+                      params: params,
+                      raw: raw,
+                      globalParams: globalParams,
+                      config: config,
+                      dispatch: dispatch,
+                      getState: getState
+                    });
+
+                  case 2:
+                  case "end":
+                    return _context3.stop();
+                }
+              }
+            }, _callee3, this);
+          }));
+
+          return function (_x5, _x6) {
             return _ref5.apply(this, arguments);
           };
         }()
@@ -2064,122 +3084,90 @@ function actions () {
     };
   };
 
-  var put = function put(url, _ref6) {
-    var PENDING = _ref6.PENDING,
-        SUCCESS = _ref6.SUCCESS,
-        FAILURE = _ref6.FAILURE;
+  var post = function post(url, ACTIONS) {
     var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var raw = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
     return function (id, value, meta) {
       return (
         /*#__PURE__*/
         function () {
-          var _ref7 = _asyncToGenerator(
+          var _ref6 = _asyncToGenerator(
           /*#__PURE__*/
-          regenerator.mark(function _callee3(dispatch, getState) {
-<<<<<<< HEAD
-            var response, data, _data2;
-=======
-            var response, data, _data3;
->>>>>>> master
-
-            return regenerator.wrap(function _callee3$(_context3) {
+          regenerator.mark(function _callee4(dispatch, getState) {
+            return regenerator.wrap(function _callee4$(_context4) {
               while (1) {
-                switch (_context3.prev = _context3.next) {
+                switch (_context4.prev = _context4.next) {
                   case 0:
-                    dispatch({
-                      type: PENDING,
-                      payload: {
-                        id: id,
-                        value: value,
-                        meta: meta,
-                        code: -1
-                      }
-                    });
-                    _context3.prev = 1;
-                    _context3.next = 4;
-                    return fetch(url(id, value, meta), getParams$1(getState(), globalParams, _objectSpread({
-                      method: 'PUT',
-                      headers: {
-                        'Content-Type': CONTENT_TYPE
-                      },
-                      body: raw ? value : JSON.stringify(value)
-                    }, params), config));
-
-                  case 4:
-                    response = _context3.sent;
-
-                    if (response.status) {
-                      _context3.next = 9;
-                      break;
-                    }
-
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      id: id
-                    });
-                    _context3.next = 24;
-                    break;
-
-                  case 9:
-                    if (!(response.status >= 200 && response.status < 300)) {
-                      _context3.next = 16;
-                      break;
-                    }
-
-                    _context3.next = 12;
-                    return response.json();
-
-                  case 12:
-                    data = _context3.sent;
-                    dispatchSuccess$1(dispatch, response.status, data.value, data.permissions || {}, SUCCESS, {
-                      id: id
-                    });
-                    _context3.next = 24;
-                    break;
-
-                  case 16:
-                    if (!(response.status >= 400 && response.status < 500)) {
-                      _context3.next = 23;
-                      break;
-                    }
-
-                    _context3.next = 19;
-                    return response.json();
-
-                  case 19:
-                    _data2 = _context3.sent;
-                    dispatchErrors$1(dispatch, response, FAILURE, {
+                    _context4.next = 2;
+                    return postAction({
+                      ACTIONS: ACTIONS,
+                      url: url,
                       id: id,
-                      error: _data2.error
-                    });
-                    _context3.next = 24;
-                    break;
-
-                  case 23:
-                    dispatchErrors$1(dispatch, response, FAILURE, {
-                      id: id
-                    });
-
-                  case 24:
-                    _context3.next = 29;
-                    break;
-
-                  case 26:
-                    _context3.prev = 26;
-                    _context3.t0 = _context3["catch"](1);
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      id: id
+                      value: value,
+                      meta: meta,
+                      params: params,
+                      raw: raw,
+                      globalParams: globalParams,
+                      config: config,
+                      dispatch: dispatch,
+                      getState: getState
                     });
 
-                  case 29:
+                  case 2:
                   case "end":
-                    return _context3.stop();
+                    return _context4.stop();
                 }
               }
-            }, _callee3, this, [[1, 26]]);
+            }, _callee4, this);
           }));
 
-          return function (_x5, _x6) {
+          return function (_x7, _x8) {
+            return _ref6.apply(this, arguments);
+          };
+        }()
+      );
+    };
+  };
+
+  var patch = function patch(url, ACTIONS) {
+    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var raw = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+    return function (patchId, id, value, meta) {
+      return (
+        /*#__PURE__*/
+        function () {
+          var _ref7 = _asyncToGenerator(
+          /*#__PURE__*/
+          regenerator.mark(function _callee5(dispatch, getState) {
+            return regenerator.wrap(function _callee5$(_context5) {
+              while (1) {
+                switch (_context5.prev = _context5.next) {
+                  case 0:
+                    _context5.next = 2;
+                    return patchAction({
+                      ACTIONS: ACTIONS,
+                      url: url,
+                      patchId: patchId,
+                      id: id,
+                      value: value,
+                      meta: meta,
+                      params: params,
+                      raw: raw,
+                      globalParams: globalParams,
+                      config: config,
+                      dispatch: dispatch,
+                      getState: getState
+                    });
+
+                  case 2:
+                  case "end":
+                    return _context5.stop();
+                }
+              }
+            }, _callee5, this);
+          }));
+
+          return function (_x9, _x10) {
             return _ref7.apply(this, arguments);
           };
         }()
@@ -2187,501 +3175,89 @@ function actions () {
     };
   };
 
-  var post = function post(url, _ref8) {
-    var PENDING = _ref8.PENDING,
-        SUCCESS = _ref8.SUCCESS,
-        FAILURE = _ref8.FAILURE;
-    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var raw = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-    return function (id, value, meta) {
-      return (
-        /*#__PURE__*/
-        function () {
-          var _ref9 = _asyncToGenerator(
-          /*#__PURE__*/
-          regenerator.mark(function _callee4(dispatch, getState) {
-<<<<<<< HEAD
-            var response, data, _data3;
-=======
-            var response, data, _data4;
->>>>>>> master
-
-            return regenerator.wrap(function _callee4$(_context4) {
-              while (1) {
-                switch (_context4.prev = _context4.next) {
-                  case 0:
-                    dispatch({
-                      type: PENDING,
-                      payload: {
-                        id: id,
-                        value: value,
-                        meta: meta,
-                        code: -1
-                      }
-                    });
-                    _context4.prev = 1;
-                    _context4.next = 4;
-                    return fetch(url(id, value, meta), getParams$1(getState(), globalParams, _objectSpread({
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': CONTENT_TYPE
-                      },
-                      body: raw ? value : JSON.stringify(value)
-                    }, params), config));
-
-                  case 4:
-                    response = _context4.sent;
-
-                    if (response.status) {
-                      _context4.next = 9;
-                      break;
-                    }
-
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      id: id
-                    });
-                    _context4.next = 24;
-                    break;
-
-                  case 9:
-                    if (!(response.status >= 200 && response.status < 300)) {
-                      _context4.next = 16;
-                      break;
-                    }
-
-                    _context4.next = 12;
-                    return response.json();
-
-                  case 12:
-                    data = _context4.sent;
-                    dispatchSuccess$1(dispatch, response.status, data.value, data.permissions || {}, SUCCESS, {
-                      id: id
-                    });
-                    _context4.next = 24;
-                    break;
-
-                  case 16:
-                    if (!(response.status >= 400 && response.status < 500)) {
-                      _context4.next = 23;
-                      break;
-                    }
-
-                    _context4.next = 19;
-                    return response.json();
-
-                  case 19:
-                    _data3 = _context4.sent;
-                    dispatchErrors$1(dispatch, response, FAILURE, {
-                      id: id,
-                      error: _data3.error
-                    });
-                    _context4.next = 24;
-                    break;
-
-                  case 23:
-                    dispatchErrors$1(dispatch, response, FAILURE, {
-                      id: id
-                    });
-
-                  case 24:
-                    _context4.next = 29;
-                    break;
-
-                  case 26:
-                    _context4.prev = 26;
-                    _context4.t0 = _context4["catch"](1);
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      id: id
-                    });
-
-                  case 29:
-                  case "end":
-                    return _context4.stop();
-                }
-              }
-            }, _callee4, this, [[1, 26]]);
-          }));
-
-          return function (_x7, _x8) {
-            return _ref9.apply(this, arguments);
-          };
-        }()
-      );
-    };
-  };
-
-  var patch = function patch(url, _ref10) {
-    var PENDING = _ref10.PENDING,
-        SUCCESS = _ref10.SUCCESS,
-        FAILURE = _ref10.FAILURE;
-    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var raw = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-    return function (patchId, id, value, meta) {
-      return (
-        /*#__PURE__*/
-        function () {
-          var _ref11 = _asyncToGenerator(
-          /*#__PURE__*/
-          regenerator.mark(function _callee5(dispatch, getState) {
-<<<<<<< HEAD
-            var response, data, _data4;
-=======
-            var response, data, _data5;
->>>>>>> master
-
-            return regenerator.wrap(function _callee5$(_context5) {
-              while (1) {
-                switch (_context5.prev = _context5.next) {
-                  case 0:
-                    dispatch({
-                      type: PENDING,
-                      payload: {
-                        id: id,
-                        patchId: patchId,
-                        value: value,
-                        meta: meta,
-                        code: -1
-                      }
-                    });
-                    _context5.prev = 1;
-                    _context5.next = 4;
-                    return fetch(url(id, value, meta), getParams$1(getState(), globalParams, _objectSpread({
-                      method: 'PATCH',
-                      headers: {
-                        'Content-Type': CONTENT_TYPE
-                      },
-                      body: raw ? value : JSON.stringify(value)
-                    }, params), config));
-
-                  case 4:
-                    response = _context5.sent;
-
-                    if (response.status) {
-                      _context5.next = 9;
-                      break;
-                    }
-
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      id: id,
-                      patchId: patchId
-                    });
-                    _context5.next = 24;
-                    break;
-
-                  case 9:
-                    if (!(response.status >= 200 && response.status < 300)) {
-                      _context5.next = 16;
-                      break;
-                    }
-
-                    _context5.next = 12;
-                    return response.json();
-
-                  case 12:
-                    data = _context5.sent;
-                    dispatchSuccess$1(dispatch, response.status, data.value, data.permissions || {}, SUCCESS, {
-                      id: id,
-                      patchId: patchId
-                    });
-                    _context5.next = 24;
-                    break;
-
-                  case 16:
-                    if (!(response.status >= 400 && response.status < 500)) {
-                      _context5.next = 23;
-                      break;
-                    }
-
-                    _context5.next = 19;
-                    return response.json();
-
-                  case 19:
-                    _data4 = _context5.sent;
-                    dispatchErrors$1(dispatch, response, FAILURE, {
-                      id: id,
-                      patchId: patchId,
-                      error: _data4.error
-                    });
-                    _context5.next = 24;
-                    break;
-
-                  case 23:
-                    dispatchErrors$1(dispatch, response, FAILURE, {
-                      id: id,
-                      patchId: patchId
-                    });
-
-                  case 24:
-                    _context5.next = 29;
-                    break;
-
-                  case 26:
-                    _context5.prev = 26;
-                    _context5.t0 = _context5["catch"](1);
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      id: id,
-                      patchId: patchId
-                    });
-
-                  case 29:
-                  case "end":
-                    return _context5.stop();
-                }
-              }
-            }, _callee5, this, [[1, 26]]);
-          }));
-
-          return function (_x9, _x10) {
-            return _ref11.apply(this, arguments);
-          };
-        }()
-      );
-    };
-  };
-
-  var remove = function remove(url, _ref12) {
-    var PENDING = _ref12.PENDING,
-        SUCCESS = _ref12.SUCCESS,
-        FAILURE = _ref12.FAILURE;
+  var remove = function remove(url, ACTIONS) {
     var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     return function (id, meta) {
       return (
         /*#__PURE__*/
         function () {
-          var _ref13 = _asyncToGenerator(
+          var _ref8 = _asyncToGenerator(
           /*#__PURE__*/
           regenerator.mark(function _callee6(dispatch, getState) {
-<<<<<<< HEAD
-            var response, data, _data5;
-=======
-            var response, data, _data6;
->>>>>>> master
-
             return regenerator.wrap(function _callee6$(_context6) {
               while (1) {
                 switch (_context6.prev = _context6.next) {
                   case 0:
-                    dispatch({
-                      type: PENDING,
-                      headers: {
-                        'Content-Type': CONTENT_TYPE
-                      },
-                      payload: {
-                        id: id,
-                        meta: meta,
-                        code: -1
-                      }
-                    });
-                    _context6.prev = 1;
-                    _context6.next = 4;
-                    return fetch(url(id, meta), getParams$1(getState(), globalParams, _objectSpread({
-                      method: 'DELETE'
-                    }, params), config));
-
-                  case 4:
-                    response = _context6.sent;
-
-                    if (response.status) {
-                      _context6.next = 9;
-                      break;
-                    }
-
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      id: id
-                    });
-                    _context6.next = 24;
-                    break;
-
-                  case 9:
-                    if (!(response.status >= 200 && response.status < 300)) {
-                      _context6.next = 16;
-                      break;
-                    }
-
-                    _context6.next = 12;
-                    return response.json();
-
-                  case 12:
-                    data = _context6.sent;
-                    dispatchSuccess$1(dispatch, response.status, {}, {}, SUCCESS, {
-                      id: id
-                    });
-                    _context6.next = 24;
-                    break;
-
-                  case 16:
-                    if (!(response.status >= 400 && response.status < 500)) {
-                      _context6.next = 23;
-                      break;
-                    }
-
-                    _context6.next = 19;
-                    return response.json();
-
-                  case 19:
-                    _data5 = _context6.sent;
-                    dispatchErrors$1(dispatch, response, FAILURE, {
+                    _context6.next = 2;
+                    return removeAction({
+                      ACTIONS: ACTIONS,
+                      url: url,
                       id: id,
-                      error: _data5.error
-                    });
-                    _context6.next = 24;
-                    break;
-
-                  case 23:
-                    dispatchErrors$1(dispatch, response, FAILURE, {
-                      id: id
-                    });
-
-                  case 24:
-                    _context6.next = 29;
-                    break;
-
-                  case 26:
-                    _context6.prev = 26;
-                    _context6.t0 = _context6["catch"](1);
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      id: id
+                      meta: meta,
+                      params: params,
+                      raw: raw,
+                      globalParams: globalParams,
+                      config: config,
+                      dispatch: dispatch,
+                      getState: getState
                     });
 
-                  case 29:
+                  case 2:
                   case "end":
                     return _context6.stop();
                 }
               }
-            }, _callee6, this, [[1, 26]]);
+            }, _callee6, this);
           }));
 
           return function (_x11, _x12) {
-            return _ref13.apply(this, arguments);
+            return _ref8.apply(this, arguments);
           };
         }()
       );
     };
   };
 
-  var removeAll = function removeAll(url, _ref14) {
-    var PENDING = _ref14.PENDING,
-        SUCCESS = _ref14.SUCCESS,
-        FAILURE = _ref14.FAILURE;
+  var removeAll = function removeAll(url, ACTIONS) {
     var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var raw = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
     return function (id, ids, value, meta) {
       return (
         /*#__PURE__*/
         function () {
-          var _ref15 = _asyncToGenerator(
+          var _ref9 = _asyncToGenerator(
           /*#__PURE__*/
           regenerator.mark(function _callee7(dispatch, getState) {
-<<<<<<< HEAD
-            var response, data, _data6;
-=======
-            var response, data, _data7;
->>>>>>> master
-
             return regenerator.wrap(function _callee7$(_context7) {
               while (1) {
                 switch (_context7.prev = _context7.next) {
                   case 0:
-                    dispatch({
-                      type: PENDING,
-                      headers: {
-                        'Content-Type': CONTENT_TYPE
-                      },
-                      payload: {
-                        id: id,
-                        ids: ids,
-                        value: value,
-                        meta: meta,
-                        code: -1
-                      }
-                    });
-                    _context7.prev = 1;
-                    _context7.next = 4;
-                    return fetch(url(ids, value, meta), getParams$1(getState(), globalParams, _objectSpread({
-                      method: 'DELETE',
-                      body: raw ? value : JSON.stringify(value)
-                    }, params), config));
-
-                  case 4:
-                    response = _context7.sent;
-
-                    if (response.status) {
-                      _context7.next = 9;
-                      break;
-                    }
-
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      ids: ids,
-                      id: id
-                    });
-                    _context7.next = 24;
-                    break;
-
-                  case 9:
-                    if (!(response.status >= 200 && response.status < 300)) {
-                      _context7.next = 16;
-                      break;
-                    }
-
-                    _context7.next = 12;
-                    return response.json();
-
-                  case 12:
-                    data = _context7.sent;
-                    dispatchSuccess$1(dispatch, response.status, {}, {}, SUCCESS, {
-                      ids: ids,
-                      id: id
-                    });
-                    _context7.next = 24;
-                    break;
-
-                  case 16:
-                    if (!(response.status >= 400 && response.status < 500)) {
-                      _context7.next = 23;
-                      break;
-                    }
-
-                    _context7.next = 19;
-                    return response.json();
-
-                  case 19:
-                    _data6 = _context7.sent;
-                    dispatchErrors$1(dispatch, response, FAILURE, {
-                      ids: ids,
+                    _context7.next = 2;
+                    return removeAllAction({
+                      ACTIONS: ACTIONS,
+                      url: url,
                       id: id,
-                      error: _data6.error
-                    });
-                    _context7.next = 24;
-                    break;
-
-                  case 23:
-                    dispatchErrors$1(dispatch, response, FAILURE, {
                       ids: ids,
-                      id: id
+                      value: value,
+                      meta: meta,
+                      params: params,
+                      raw: raw,
+                      globalParams: globalParams,
+                      config: config,
+                      dispatch: dispatch,
+                      getState: getState
                     });
 
-                  case 24:
-                    _context7.next = 29;
-                    break;
-
-                  case 26:
-                    _context7.prev = 26;
-                    _context7.t0 = _context7["catch"](1);
-                    dispatchErrors$1(dispatch, null, FAILURE, {
-                      ids: ids,
-                      id: id
-                    });
-
-                  case 29:
+                  case 2:
                   case "end":
                     return _context7.stop();
                 }
               }
-            }, _callee7, this, [[1, 26]]);
+            }, _callee7, this);
           }));
 
           return function (_x13, _x14) {
-            return _ref15.apply(this, arguments);
+            return _ref9.apply(this, arguments);
           };
         }()
       );
@@ -2703,6 +3279,6 @@ function actions () {
 exports.default = reducer;
 exports.store = store;
 exports.actions = actions;
-exports.utils = getTimestamp;
+exports.utils = utils;
 exports.defaults = defaultState;
 exports.errors = ERRORS;
