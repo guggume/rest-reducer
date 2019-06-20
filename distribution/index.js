@@ -455,14 +455,13 @@ var putFailure = applyMiddleware(function (state) {
 
 var patch = applyMiddleware(function (state) {
   var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      patchId = _ref.patchId,
-      value = _ref.value;
+      patchId = _ref.patchId;
 
   var item = defaultItem;
   return _objectSpread({}, state, _defineProperty({}, PATCHES, _objectSpread({}, state[PATCHES], _defineProperty({}, patchId, _objectSpread({}, item, changeMeta(STATES.PENDING, VERBS.PATCH, -1))))));
 }, [checkStateMW]);
 var patchSuccess = applyMiddleware(function (state) {
-  var _objectSpread4, _objectSpread7;
+  var _objectSpread4;
 
   var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
       id = _ref2.id,
@@ -472,14 +471,14 @@ var patchSuccess = applyMiddleware(function (state) {
       code = _ref2.code;
 
   var item = state[PATCHES][patchId];
-  return _objectSpread({}, state, (_objectSpread7 = {}, _defineProperty(_objectSpread7, PATCHES, _objectSpread({}, state[PATCHES], _defineProperty({}, patchId, _objectSpread({}, item, (_objectSpread4 = {}, _defineProperty(_objectSpread4, DATA, value), _defineProperty(_objectSpread4, PERMISSIONS, permissions), _objectSpread4), changeMeta(STATES.SYNCED, VERBS.PATCH, code, null))))), _defineProperty(_objectSpread7, ITEMS, _objectSpread({}, state[ITEMS], _defineProperty({}, id, _objectSpread({}, state[ITEMS][id], changeMeta(STATES.STALE, VERBS.PATCH))))), _objectSpread7));
+  return _objectSpread({}, state, _defineProperty({}, PATCHES, _objectSpread({}, state[PATCHES], _defineProperty({}, patchId, _objectSpread({}, item, (_objectSpread4 = {}, _defineProperty(_objectSpread4, DATA, value), _defineProperty(_objectSpread4, PERMISSIONS, permissions), _objectSpread4), changeMeta(STATES.SYNCED, VERBS.PATCH, code, null))))), state[ITEMS][id] ? _defineProperty({}, ITEMS, _objectSpread({}, state[ITEMS], _defineProperty({}, id, _objectSpread({}, state[ITEMS][id], changeMeta(STATES.STALE, VERBS.PATCH))))) : {});
 }, [checkStateMW]);
 var patchFailure = applyMiddleware(function (state) {
-  var _ref3 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      id = _ref3.id,
-      patchId = _ref3.patchId,
-      code = _ref3.code,
-      error = _ref3.error;
+  var _ref4 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      id = _ref4.id,
+      patchId = _ref4.patchId,
+      code = _ref4.code,
+      error = _ref4.error;
 
   var item = state[ITEMS][id];
   return _objectSpread({}, state, _defineProperty({}, PATCHES, _objectSpread({}, state[PATCHES], _defineProperty({}, patchId, _objectSpread({}, item, changeMeta(STATES.FAILED, VERBS.PATCH, code, error))))));
@@ -1531,11 +1530,18 @@ try {
 
 var regenerator = runtime_1;
 
+<<<<<<< HEAD
 var handleResponse$$1 = {
   get: handleResponse$1
 };
 var replayAction = {
   get: getAction
+=======
+var ERRORS = {
+  0: 'RRR_NO_RESPONSE',
+  403: 'RRR_FORBIDDEN',
+  401: 'RRR_UNAUTHORIZED'
+>>>>>>> master
 };
 var refreshing = false;
 var queue = [];
@@ -2019,6 +2025,11 @@ function actions () {
           var _ref5 = _asyncToGenerator(
           /*#__PURE__*/
           regenerator.mark(function _callee2(dispatch, getState) {
+<<<<<<< HEAD
+=======
+            var response, data, _data2;
+
+>>>>>>> master
             return regenerator.wrap(function _callee2$(_context2) {
               while (1) {
                 switch (_context2.prev = _context2.next) {
@@ -2066,7 +2077,11 @@ function actions () {
           var _ref7 = _asyncToGenerator(
           /*#__PURE__*/
           regenerator.mark(function _callee3(dispatch, getState) {
+<<<<<<< HEAD
             var response, data, _data2;
+=======
+            var response, data, _data3;
+>>>>>>> master
 
             return regenerator.wrap(function _callee3$(_context3) {
               while (1) {
@@ -2185,7 +2200,11 @@ function actions () {
           var _ref9 = _asyncToGenerator(
           /*#__PURE__*/
           regenerator.mark(function _callee4(dispatch, getState) {
+<<<<<<< HEAD
             var response, data, _data3;
+=======
+            var response, data, _data4;
+>>>>>>> master
 
             return regenerator.wrap(function _callee4$(_context4) {
               while (1) {
@@ -2304,7 +2323,11 @@ function actions () {
           var _ref11 = _asyncToGenerator(
           /*#__PURE__*/
           regenerator.mark(function _callee5(dispatch, getState) {
+<<<<<<< HEAD
             var response, data, _data4;
+=======
+            var response, data, _data5;
+>>>>>>> master
 
             return regenerator.wrap(function _callee5$(_context5) {
               while (1) {
@@ -2428,7 +2451,11 @@ function actions () {
           var _ref13 = _asyncToGenerator(
           /*#__PURE__*/
           regenerator.mark(function _callee6(dispatch, getState) {
+<<<<<<< HEAD
             var response, data, _data5;
+=======
+            var response, data, _data6;
+>>>>>>> master
 
             return regenerator.wrap(function _callee6$(_context6) {
               while (1) {
@@ -2545,7 +2572,11 @@ function actions () {
           var _ref15 = _asyncToGenerator(
           /*#__PURE__*/
           regenerator.mark(function _callee7(dispatch, getState) {
+<<<<<<< HEAD
             var response, data, _data6;
+=======
+            var response, data, _data7;
+>>>>>>> master
 
             return regenerator.wrap(function _callee7$(_context7) {
               while (1) {
