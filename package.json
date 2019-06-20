@@ -1,6 +1,6 @@
 {
   "name": "redux-rest-reducer",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Restfull reducer for redux",
   "main": "./distribution/index.js",
   "module": "distribution/index.js",
