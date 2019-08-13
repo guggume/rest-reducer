@@ -1565,6 +1565,7 @@ function _handleResponse() {
         id,
         query,
         config,
+        getState,
         data,
         _data,
         _args = arguments;
@@ -1574,7 +1575,7 @@ function _handleResponse() {
         switch (_context.prev = _context.next) {
           case 0:
             replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
-            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, query = options.query, config = options.config;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, query = options.query, config = options.config, getState = options.getState;
 
             if (response.status) {
               _context.next = 6;
@@ -1605,7 +1606,7 @@ function _handleResponse() {
             break;
 
           case 13:
-            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+            if (!(response.status === 401 && canRefreshToken(config, getState()) && !replay)) {
               _context.next = 17;
               break;
             }
@@ -1735,6 +1736,7 @@ function _handleResponse$1() {
         dispatch,
         id,
         config,
+        getState,
         data,
         _data,
         _args = arguments;
@@ -1744,7 +1746,7 @@ function _handleResponse$1() {
         switch (_context.prev = _context.next) {
           case 0:
             replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
-            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, config = options.config;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, config = options.config, getState = options.getState;
 
             if (response.status) {
               _context.next = 6;
@@ -1775,7 +1777,7 @@ function _handleResponse$1() {
             break;
 
           case 13:
-            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+            if (!(response.status === 401 && canRefreshToken(config, getState()) && !replay)) {
               _context.next = 17;
               break;
             }
@@ -1914,6 +1916,7 @@ function _handleResponse$2() {
         id,
         patchId,
         config,
+        getState,
         data,
         _data,
         _args = arguments;
@@ -1923,7 +1926,7 @@ function _handleResponse$2() {
         switch (_context.prev = _context.next) {
           case 0:
             replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
-            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, patchId = options.patchId, config = options.config;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, patchId = options.patchId, config = options.config, getState = options.getState;
 
             if (response.status) {
               _context.next = 6;
@@ -1956,7 +1959,7 @@ function _handleResponse$2() {
             break;
 
           case 13:
-            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+            if (!(response.status === 401 && canRefreshToken(config, getState()) && !replay)) {
               _context.next = 17;
               break;
             }
@@ -2098,6 +2101,7 @@ function _handleResponse$3() {
         dispatch,
         id,
         config,
+        getState,
         data,
         _data,
         _args = arguments;
@@ -2107,7 +2111,7 @@ function _handleResponse$3() {
         switch (_context.prev = _context.next) {
           case 0:
             replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
-            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, config = options.config;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, config = options.config, getState = options.getState;
 
             if (response.status) {
               _context.next = 6;
@@ -2138,7 +2142,7 @@ function _handleResponse$3() {
             break;
 
           case 13:
-            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+            if (!(response.status === 401 && canRefreshToken(config, getState()) && !replay)) {
               _context.next = 17;
               break;
             }
@@ -2276,6 +2280,7 @@ function _handleResponse$4() {
         dispatch,
         id,
         config,
+        getState,
         data,
         _data,
         _args = arguments;
@@ -2285,7 +2290,7 @@ function _handleResponse$4() {
         switch (_context.prev = _context.next) {
           case 0:
             replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
-            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, config = options.config;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, config = options.config, getState = options.getState;
 
             if (response.status) {
               _context.next = 6;
@@ -2316,7 +2321,7 @@ function _handleResponse$4() {
             break;
 
           case 13:
-            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+            if (!(response.status === 401 && canRefreshToken(config, getState()) && !replay)) {
               _context.next = 17;
               break;
             }
@@ -2447,6 +2452,7 @@ function _handleResponse$5() {
         id,
         ids,
         config,
+        getState,
         data,
         _data,
         _args = arguments;
@@ -2456,7 +2462,7 @@ function _handleResponse$5() {
         switch (_context.prev = _context.next) {
           case 0:
             replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
-            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, ids = options.ids, config = options.config;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, ids = options.ids, config = options.config, getState = options.getState;
 
             if (response.status) {
               _context.next = 6;
@@ -2489,7 +2495,7 @@ function _handleResponse$5() {
             break;
 
           case 13:
-            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+            if (!(response.status === 401 && canRefreshToken(config, getState()) && !replay)) {
               _context.next = 17;
               break;
             }
@@ -2724,12 +2730,13 @@ function _fetchAccessToken() {
   return _fetchAccessToken.apply(this, arguments);
 }
 
-function canRefreshToken(_ref3) {
+function canRefreshToken(_ref3, state) {
   var refreshTokenKey = _ref3.refreshTokenKey,
       refreshTokenExtractor = _ref3.refreshTokenExtractor,
       refreshTokenACTION = _ref3.refreshTokenACTION,
       refreshTokenURL = _ref3.refreshTokenURL;
-  return refreshTokenKey && refreshTokenExtractor && refreshTokenACTION && refreshTokenURL;
+  console.log("canRefreshToken", refreshTokenKey && refreshTokenExtractor && refreshTokenACTION && refreshTokenURL && refreshTokenExtractor(state));
+  return refreshTokenKey && refreshTokenExtractor && refreshTokenACTION && refreshTokenURL && refreshTokenExtractor(state);
 }
 function isRefreshing() {
   return refreshing;
@@ -2766,6 +2773,7 @@ function _handleResponse$6() {
         id,
         query,
         config,
+        getState,
         data,
         _data,
         _args = arguments;
@@ -2775,7 +2783,7 @@ function _handleResponse$6() {
         switch (_context.prev = _context.next) {
           case 0:
             replay = _args.length > 2 && _args[2] !== undefined ? _args[2] : false;
-            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, query = options.query, config = options.config;
+            ACTIONS = options.ACTIONS, dispatch = options.dispatch, id = options.id, query = options.query, config = options.config, getState = options.getState;
 
             if (response.status) {
               _context.next = 6;
@@ -2808,7 +2816,7 @@ function _handleResponse$6() {
             break;
 
           case 13:
-            if (!(response.status === 401 && canRefreshToken(config) && !replay)) {
+            if (!(response.status === 401 && canRefreshToken(config, getState()) && !replay)) {
               _context.next = 17;
               break;
             }
@@ -2898,7 +2906,7 @@ function _ref$6() {
             }
 
             addToQueue(options, "get");
-            _context2.next = 17;
+            _context2.next = 18;
             break;
 
           case 7:
@@ -2911,15 +2919,16 @@ function _ref$6() {
           case 10:
             response = _context2.sent;
             handleResponse$7(response, options);
-            _context2.next = 17;
+            _context2.next = 18;
             break;
 
           case 14:
             _context2.prev = 14;
             _context2.t0 = _context2["catch"](7);
+            console.log("rrr-exception", _context2.t0);
             handleResponse$7({}, options);
 
-          case 17:
+          case 18:
           case "end":
             return _context2.stop();
         }
