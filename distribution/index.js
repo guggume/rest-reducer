@@ -2666,21 +2666,21 @@ function _fetchAccessToken() {
   _fetchAccessToken = _asyncToGenerator(
   /*#__PURE__*/
   regenerator.mark(function _callee(options) {
-    var config, dispatch, getState, refreshTokenKey, refreshTokenExtractor, refreshTokenACTION, refreshTokenURL, refreshToken, resp, data;
+    var config, dispatch, getState, refreshTokenPayloadExtractor, refreshTokenACTION, refreshTokenURL, refreshTokenBody, resp, data;
     return regenerator.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             config = options.config, dispatch = options.dispatch, getState = options.getState;
-            refreshTokenKey = config.refreshTokenKey, refreshTokenExtractor = config.refreshTokenExtractor, refreshTokenACTION = config.refreshTokenACTION, refreshTokenURL = config.refreshTokenURL;
-            refreshToken = refreshTokenExtractor(getState());
+            refreshTokenPayloadExtractor = config.refreshTokenPayloadExtractor, refreshTokenACTION = config.refreshTokenACTION, refreshTokenURL = config.refreshTokenURL;
+            refreshTokenBody = refreshTokenPayloadExtractor(getState());
             _context.prev = 3;
             _context.next = 6;
             return fetch(refreshTokenURL, {
               headers: {
                 "Content-Type": "application/JSON"
               },
-              body: JSON.stringify(_defineProperty({}, refreshTokenKey, refreshToken)),
+              body: JSON.stringify(refreshTokenBody),
               method: "POST"
             });
 
@@ -2731,12 +2731,10 @@ function _fetchAccessToken() {
 }
 
 function canRefreshToken(_ref3, state) {
-  var refreshTokenKey = _ref3.refreshTokenKey,
-      refreshTokenExtractor = _ref3.refreshTokenExtractor,
+  var refreshTokenPayloadExtractor = _ref3.refreshTokenPayloadExtractor,
       refreshTokenACTION = _ref3.refreshTokenACTION,
       refreshTokenURL = _ref3.refreshTokenURL;
-  console.log("canRefreshToken", refreshTokenKey && refreshTokenExtractor && refreshTokenACTION && refreshTokenURL && refreshTokenExtractor(state));
-  return refreshTokenKey && refreshTokenExtractor && refreshTokenACTION && refreshTokenURL && refreshTokenExtractor(state);
+  return refreshTokenPayloadExtractor && refreshTokenACTION && refreshTokenURL && refreshTokenPayloadExtractor(state);
 }
 function isRefreshing() {
   return refreshing;
@@ -2906,7 +2904,7 @@ function _ref$6() {
             }
 
             addToQueue(options, "get");
-            _context2.next = 18;
+            _context2.next = 17;
             break;
 
           case 7:
@@ -2919,16 +2917,15 @@ function _ref$6() {
           case 10:
             response = _context2.sent;
             handleResponse$7(response, options);
-            _context2.next = 18;
+            _context2.next = 17;
             break;
 
           case 14:
             _context2.prev = 14;
             _context2.t0 = _context2["catch"](7);
-            console.log("rrr-exception", _context2.t0);
             handleResponse$7({}, options);
 
-          case 18:
+          case 17:
           case "end":
             return _context2.stop();
         }
