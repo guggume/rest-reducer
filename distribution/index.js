@@ -6,6 +6,8 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var queryString = require('query-string');
 var uuid = _interopDefault(require('uuid/v1'));
+var react = require('react');
+var reactRedux = require('react-redux');
 
 function _typeof(obj) {
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -751,6 +753,14 @@ var post$1 = function post(data, id) {
   };
 };
 
+var postNew = function postNew(data, id) {
+  if (!id) {
+    return null;
+  }
+
+  return data[ITEMS][id] || null;
+};
+
 var patch$1 = function patch(data, id) {
   if (!id) {
     return {
@@ -775,6 +785,14 @@ var patch$1 = function patch(data, id) {
     current: item,
     resolved: null
   };
+};
+
+var patchNew = function patchNew(data, id) {
+  if (!id) {
+    return null;
+  }
+
+  return data[PATCHES][id] || null;
 };
 
 var removeAll$1 = function removeAll(data, id) {
@@ -803,11 +821,26 @@ var removeAll$1 = function removeAll(data, id) {
   };
 };
 
+var createRequest = function createRequest(_ref) {
+  var key = _ref.key,
+      action = _ref.action,
+      args = _ref.args;
+  return {
+    id: uuid(),
+    key: key,
+    action: action,
+    args: args
+  };
+};
+
 var getError = function getError(resource) {
   return resource[ERROR] || null;
 };
 
 var store = {
+  createRequest: createRequest,
+  postNew: postNew,
+  patchNew: patchNew,
   getError: getError,
   get: get$1,
   getPatch: getPatch,
@@ -3284,9 +3317,209 @@ function actions () {
   };
 }
 
+function useGet(request) {
+  var _ref = request || {},
+      id = _ref.id,
+      key = _ref.key,
+      action = _ref.action,
+      args = _ref.args;
+
+  var dispatch = reactRedux.useDispatch();
+  var lastRequest = react.useRef(null);
+  var storeData = reactRedux.useSelector(function (store$$1) {
+    return store$$1[key];
+  });
+  var resource = id ? store.get.apply(store, [storeData].concat(_toConsumableArray(args))) : null;
+  var isNewRequest = !!(lastRequest.current !== request && request && request.id);
+  react.useEffect(function () {
+    if (!id) {
+      return;
+    }
+
+    if (resource && resource.isLoading === true) {
+      return;
+    }
+
+    dispatch(action.apply(void 0, _toConsumableArray(args)));
+  }, [id]);
+
+  if (lastRequest.current !== request) {
+    lastRequest.current = request;
+  }
+
+  if (!id) {
+    return [{}];
+  }
+
+  if (!resource) {
+    return [{}];
+  }
+
+  if (resource.isLoadingFailed) {
+    if (isNewRequest) {
+      return [{}];
+    }
+
+    var error = store.getError(resource);
+    return [resource, resource.data, error ? error.message || null : null];
+  }
+
+  return [resource, resource.data];
+}
+
+function useGetAll(request) {
+  var _ref = request || {},
+      id = _ref.id,
+      key = _ref.key,
+      action = _ref.action,
+      args = _ref.args;
+
+  var dispatch = reactRedux.useDispatch();
+  var lastRequest = react.useRef(null);
+  var storeData = reactRedux.useSelector(function (store$$1) {
+    return store$$1[key];
+  });
+  var resource = id ? store.getAll.apply(store, [storeData].concat(_toConsumableArray(args))) : null;
+  var isNewRequest = !!(lastRequest.current !== request && request && request.id);
+  react.useEffect(function () {
+    if (!id) {
+      return;
+    }
+
+    if (resource && resource.isLoading === true) {
+      return;
+    }
+
+    dispatch(action.apply(void 0, _toConsumableArray(args)));
+  }, [id]);
+
+  if (lastRequest.current !== request) {
+    lastRequest.current = request;
+  }
+
+  if (!id || !resource) {
+    return [{}];
+  }
+
+  if (resource.isLoadingFailed) {
+    if (isNewRequest) {
+      return [{}];
+    }
+
+    var error = store.getError(resource);
+    return [resource, resource.data, error ? error.message || null : null];
+  }
+
+  return [resource, resource.data];
+}
+
+function usePost(request) {
+  var _ref = request || {},
+      id = _ref.id,
+      key = _ref.key,
+      action = _ref.action,
+      args = _ref.args;
+
+  var dispatch = reactRedux.useDispatch();
+  var lastRequest = react.useRef(null);
+  var storeData = reactRedux.useSelector(function (store$$1) {
+    return store$$1[key];
+  });
+  var resource = id ? store.postNew(storeData, id) : null;
+  var isNewRequest = !!(lastRequest.current !== request && request && request.id);
+  react.useEffect(function () {
+    if (!id) {
+      return;
+    }
+
+    if (resource && resource.isCreating === true) {
+      return;
+    }
+
+    dispatch(action.apply(void 0, [id].concat(_toConsumableArray(args))));
+  }, [id]);
+
+  if (lastRequest.current !== request) {
+    lastRequest.current = request;
+  }
+
+  if (!id) {
+    return [{}];
+  }
+
+  if (!resource) {
+    return [{}];
+  }
+
+  if (resource.isCreatingFailed) {
+    if (isNewRequest) {
+      return [{}];
+    }
+
+    var error = store.getError(resource);
+    return [resource, resource.data, error ? error.message || null : null];
+  }
+
+  return [resource, resource.data];
+}
+
+function usePost$1(request) {
+  var _ref = request || {},
+      id = _ref.id,
+      key = _ref.key,
+      action = _ref.action,
+      args = _ref.args;
+
+  var dispatch = reactRedux.useDispatch();
+  var lastRequest = react.useRef(null);
+  var storeData = reactRedux.useSelector(function (store$$1) {
+    return store$$1[key];
+  });
+  var resource = id ? store.patchNew(storeData, id) : null;
+  var isNewRequest = !!(lastRequest.current !== request && request && request.id);
+  react.useEffect(function () {
+    if (!id) {
+      return;
+    }
+
+    if (resource && resource.isPatching === true) {
+      return;
+    }
+
+    dispatch(action.apply(void 0, [id].concat(_toConsumableArray(args))));
+  }, [id]);
+
+  if (lastRequest.current !== request) {
+    lastRequest.current = request;
+  }
+
+  if (!id) {
+    return [{}];
+  }
+
+  if (!resource) {
+    return [{}];
+  }
+
+  if (resource.isPatchingFailed) {
+    if (isNewRequest) {
+      return [{}];
+    }
+
+    var error = store.getError(resource);
+    return [resource, resource.data, error ? error.message || null : null];
+  }
+
+  return [resource, resource.data];
+}
+
 exports.default = reducer;
 exports.store = store;
 exports.actions = actions;
 exports.utils = utils;
 exports.defaults = defaultState;
 exports.errors = ERRORS;
+exports.useGet = useGet;
+exports.useGetAll = useGetAll;
+exports.usePost = usePost;
+exports.usePatch = usePost$1;

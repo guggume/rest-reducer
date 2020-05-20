@@ -1,6 +1,6 @@
 {
   "name": "redux-rest-reducer",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Restfull reducer for redux",
   "main": "./distribution/index.js",
   "module": "distribution/index.js",
@@ -8,6 +8,8 @@
   "author": "Sandeep Gunduboyina <sandeepgy11@gmail.com>",
   "license": "MIT",
   "peerDependencies": {
+    "react": "^16.8.6",
+    "react-redux": "^7.1.0",
     "query-string": "^6.2.0",
     "uuid": "^3.3.2"
   },
